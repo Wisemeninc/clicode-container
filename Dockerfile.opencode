@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
     unzip \
+    xdg-utils \
     # Network tools
     iproute2 \
     net-tools \
@@ -63,6 +64,23 @@ RUN mkdir -p /run/sshd && \
     echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config && \
     echo 'PubkeyAuthentication yes' >> /etc/ssh/sshd_config && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# Install OSC 52 clipboard wrapper (enables clipboard copy over SSH)
+# This allows OpenCode and other tools to copy to host clipboard via terminal escape sequences
+RUN printf '#!/bin/bash\n\
+# OSC 52 clipboard wrapper for remote/container sessions\n\
+# Sends clipboard data to the host terminal via OSC 52 escape sequences\n\
+data=$(cat | base64 | tr -d "\\n")\n\
+if [ -n "$TTY" ]; then\n\
+    printf "\\e]52;c;%%s\\a" "$data" > "$TTY"\n\
+elif [ -e /dev/tty ]; then\n\
+    printf "\\e]52;c;%%s\\a" "$data" > /dev/tty\n\
+else\n\
+    printf "\\e]52;c;%%s\\a" "$data"\n\
+fi\n' > /usr/local/bin/osc52-clipboard && \
+    chmod +x /usr/local/bin/osc52-clipboard && \
+    ln -sf /usr/local/bin/osc52-clipboard /usr/local/bin/xclip && \
+    ln -sf /usr/local/bin/osc52-clipboard /usr/local/bin/xsel
 
 # Set working directory
 WORKDIR /workspace/output
