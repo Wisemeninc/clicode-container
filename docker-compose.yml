@@ -10,7 +10,89 @@ services:
       - ./code_output:/workspace/output
       - ~/.claude:/root/.claude
       - ~/.opencode:/root/.opencode
+    env_file:
+      - .env
     environment:
       - SSH_PASSWORD=password123
+      
+      # =========================================================================
+      # Anthropic Direct API
+      # =========================================================================
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      
+      # =========================================================================
+      # Claude Code - Microsoft Foundry (Azure)
+      # See: https://code.claude.com/docs/en/microsoft-foundry
+      # =========================================================================
+      - CLAUDE_CODE_USE_FOUNDRY=${CLAUDE_CODE_USE_FOUNDRY:-0}
+      - ANTHROPIC_FOUNDRY_RESOURCE=${ANTHROPIC_FOUNDRY_RESOURCE:-}
+      - ANTHROPIC_FOUNDRY_BASE_URL=${ANTHROPIC_FOUNDRY_BASE_URL:-}
+      - ANTHROPIC_FOUNDRY_API_KEY=${ANTHROPIC_FOUNDRY_API_KEY:-}
+      - CLAUDE_CODE_SKIP_FOUNDRY_AUTH=${CLAUDE_CODE_SKIP_FOUNDRY_AUTH:-}
+      
+      # =========================================================================
+      # Claude Code - Amazon Bedrock
+      # See: https://code.claude.com/docs/en/amazon-bedrock
+      # =========================================================================
+      - CLAUDE_CODE_USE_BEDROCK=${CLAUDE_CODE_USE_BEDROCK:-0}
+      - ANTHROPIC_BEDROCK_BASE_URL=${ANTHROPIC_BEDROCK_BASE_URL:-}
+      - CLAUDE_CODE_SKIP_BEDROCK_AUTH=${CLAUDE_CODE_SKIP_BEDROCK_AUTH:-}
+      
+      # =========================================================================
+      # Claude Code - Google Vertex AI
+      # See: https://code.claude.com/docs/en/google-vertex-ai
+      # =========================================================================
+      - CLAUDE_CODE_USE_VERTEX=${CLAUDE_CODE_USE_VERTEX:-0}
+      - CLOUD_ML_REGION=${CLOUD_ML_REGION:-us-east5}
+      - ANTHROPIC_VERTEX_PROJECT_ID=${ANTHROPIC_VERTEX_PROJECT_ID:-}
+      - ANTHROPIC_VERTEX_BASE_URL=${ANTHROPIC_VERTEX_BASE_URL:-}
+      - CLAUDE_CODE_SKIP_VERTEX_AUTH=${CLAUDE_CODE_SKIP_VERTEX_AUTH:-}
+      
+      # =========================================================================
+      # Claude Code + Ollama (Anthropic-compatible API)
+      # See: https://docs.ollama.com/integrations/claude-code
+      # =========================================================================
+      - ANTHROPIC_AUTH_TOKEN=${ANTHROPIC_AUTH_TOKEN:-}
+      - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL:-}
+      
+      # =========================================================================
+      # Corporate Proxy / LLM Gateway
+      # =========================================================================
+      - HTTPS_PROXY=${HTTPS_PROXY:-}
+      - HTTP_PROXY=${HTTP_PROXY:-}
+      
+      # =========================================================================
+      # AWS Credentials (for Bedrock - Claude Code & OpenCode)
+      # =========================================================================
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_PROFILE=${AWS_PROFILE:-}
+      - AWS_BEARER_TOKEN_BEDROCK=${AWS_BEARER_TOKEN_BEDROCK:-}
+      
+      # =========================================================================
+      # Azure OpenAI (for OpenCode)
+      # See: https://opencode.ai/docs/providers/#azure-openai
+      # =========================================================================
+      - AZURE_RESOURCE_NAME=${AZURE_RESOURCE_NAME:-}
+      
+      # =========================================================================
+      # Google Vertex AI (for OpenCode)
+      # See: https://opencode.ai/docs/providers/#google-vertex-ai
+      # =========================================================================
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT:-}
+      - VERTEX_LOCATION=${VERTEX_LOCATION:-global}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}
+      
+      # =========================================================================
+      # PAI Features
+      # =========================================================================
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - BRIGHTDATA_API_KEY=${BRIGHTDATA_API_KEY:-}
+      - APIFY_API_KEY=${APIFY_API_KEY:-}
+      
+    extra_hosts:
+      # Allow container to access host services (Ollama, etc.)
+      - "host.docker.internal:host-gateway"
     stdin_open: true
     tty: true

@@ -23,6 +23,10 @@ RUN curl -fsSL https://github.com/anomalyco/opencode/releases/latest/download/op
     chmod +x /root/.opencode/bin/opencode && \
     rm /tmp/opencode.tar.gz
 
+# Install Claude Code (required for PAI's pai CLI)
+RUN curl -fsSL https://claude.ai/install.sh | bash
+ENV PATH="/root/.local/bin:${PATH}"
+
 # Clone Personal AI Infrastructure (PAI)
 RUN git clone https://github.com/danielmiessler/Personal_AI_Infrastructure.git /opt/PAI
 
@@ -38,7 +42,8 @@ RUN echo 'root:password123' | chpasswd
 
 # Add aliases to bashrc
 RUN echo 'alias opencode="/root/.opencode/bin/opencode"' >> /root/.bashrc && \
-    echo 'export PATH="/root/.bun/bin:$PATH"' >> /root/.bashrc
+    echo 'alias pai="bun /root/.claude/skills/PAI/Tools/pai.ts"' >> /root/.bashrc && \
+    echo 'export PATH="/root/.local/bin:/root/.bun/bin:$PATH"' >> /root/.bashrc
 
 # Configure SSH
 RUN mkdir -p /run/sshd && \
